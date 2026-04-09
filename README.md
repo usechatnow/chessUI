@@ -56,12 +56,9 @@ npm install chess.js @chrisoakman/chessboardjs @chrisoakman/chessboard2 @lichess
 <html>
 <head>
     <title>Chess Libs Setup</title>
-    <!-- Chessground CSS -->
     <link rel="stylesheet" href="node_modules/@lichess-org/chessground/assets/chessground.base.css">
     <link rel="stylesheet" href="node_modules/@lichess-org/chessground/assets/chessground.brown.css">
-    <!-- ChessboardJS CSS -->
     <link rel="stylesheet" href="node_modules/@chrisoakman/chessboardjs/dist/css/chessboard-1.0.0.min.css">
-    <!-- Chessboard2 CSS -->
     <link rel="stylesheet" href="node_modules/@chrisoakman/chessboard2/dist/chessboard2.min.css">
 </head>
 <body>

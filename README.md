@@ -1,17 +1,12 @@
-# Chessground
+# boardmatejs
 
-[![Continuous Integration](https://github.com/lichess-org/chessground/workflows/Continuous%20Integration/badge.svg)](https://github.com/lichess-org/chessground/actions?query=workflow%3A%22Continuous+Integration%22)
-[![npm](https://img.shields.io/npm/v/@lichess-org/chessground)](https://www.npmjs.com/package/@lichess-org/chessground)
-
-![Chessground in 2D and 3D](/screenshot/twin.jpg)
-
-_Chessground_ is a free/libre open source chess UI developed for
-[lichess.org](https://lichess.org).
+_boardmatejs_ is a free/libre open source chess UI developed for
+using the best.
 It targets modern browsers, as well as mobile development using Cordova.
-
+It is also a TypeScript chess library used for chess move generation/validation, piece placement/movement, and check/checkmate/stalemate detection - basically everything.You can code the ai to it because it is also a JavaScript chessboard where you can add an ai.
 ## License
 
-Chessground is distributed under the **GPL-3.0 license** (or any later version,
+boardmatejs is distributed under the **GPL-3.0 license** (or any later version,
 at your option).
 When you use Chessground for your website, your combined work may be
 distributed only under the GPL. **You must release your source code** to the
@@ -19,18 +14,11 @@ users of your website.
 
 Please read more about GPL for JavaScript on [greendrake.info](https://greendrake.info/publications/js-gpl).
 
-## Demos
 
-- [Embedded PGN viewer](https://github.com/lichess-org/pgn-viewer)
-- [Chess TV](https://lichess.org/tv)
-- [Board editor](https://lichess.org/editor)
-- [Puzzles](https://lichess.org/training)
-- [Analysis board](https://lichess.org/ofWXRFGy)
-- [Game preview](https://lichess.org/games)
 
 ## Features
 
-Chessground is designed to fulfill all lichess.org web and mobile apps needs, so it is pretty featureful.
+boardmatejs is designed to fulfill all lichess.org web and mobile apps needs, so it is pretty featureful.
 
 - Well typed with TypeScript
 - Fast. Uses a custom DOM diff algorithm to reduce DOM writes to the absolute minimum.
@@ -54,74 +42,83 @@ Chessground is designed to fulfill all lichess.org web and mobile apps needs, so
 - Display last move, check, move destinations, and premove destinations (hover effects possible)
 - Import and export positions in FEN notation
 - User callbacks
-- No chess logic inside: can be used for [chess variants](https://lichess.org/variant)
-
+- No chess logic inside: can be used for chess variants
+- etc.
 ## Installation
 
 ```sh
-npm install --save @lichess-org/chessground
+npm install chess.js @chrisoakman/chessboardjs @chrisoakman/chessboard2 @lichess-org/chessground jquery
 ```
 
 ### Usage
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess Libs Setup</title>
+    <!-- Chessground CSS -->
+    <link rel="stylesheet" href="node_modules/@lichess-org/chessground/assets/chessground.base.css">
+    <link rel="stylesheet" href="node_modules/@lichess-org/chessground/assets/chessground.brown.css">
+    <!-- ChessboardJS CSS -->
+    <link rel="stylesheet" href="node_modules/@chrisoakman/chessboardjs/dist/css/chessboard-1.0.0.min.css">
+    <!-- Chessboard2 CSS -->
+    <link rel="stylesheet" href="node_modules/@chrisoakman/chessboard2/dist/chessboard2.min.css">
+</head>
+<body>
+    <div id="board1" style="width: 400px"></div>
+    <div id="board2" style="width: 400px"></div>
+    <script src="bundle.js"></script> <!-- Your compiled JS -->
+</body>
+</html>
 
+```
 ```js
+// Import libraries
+import { Chess } from 'chess.js';
+import $ from 'jquery';
+import { Chessboard } from '@chrisoakman/chessboardjs';
 import { Chessground } from '@lichess-org/chessground';
 
-const config = {};
-const ground = Chessground(document.body, config);
+
+const game = new Chess();
+
+
+var board1 = Chessboard('board1', {
+    draggable: true,
+    position: 'start',
+    onDrop: handleMove
+});
+
+function handleMove(source, target) {
+    let move = game.move({ from: source, to: target, promotion: 'q' });
+    if (move === null) return 'snapback'; // Invalid move
+    board1.position(game.fen()); // Update board
+    
+    // Also update the chessground board
+    ground.set({ fen: game.fen() });
+}
+
+const ground = Chessground(document.getElementById('board2'), {
+    fen: game.fen(),
+    movable: {
+        color: 'white',
+        dests: toDests(game)
+    }
+});
+
+// Helper to convert chess.js moves to chessground format
+function toDests(game) {
+    const dests = {};
+    game.SQUARES.forEach(s => {
+        const ms = game.moves({square: s, verbose: true});
+        if (ms.length) dests[s] = ms.map(m => m.to);
+    });
+    return dests;
+}
+
 ```
-
-### Wrappers
-
-- React: [react-chess/chessground](https://github.com/react-chess/chessground), [ruilisi/react-chessground](https://github.com/ruilisi/react-chessground)
-- Vue.js: [vitogit/vue-chessboard](https://github.com/vitogit/vue-chessboard), [qwerty084/vue3-chessboard](https://github.com/qwerty084/vue3-chessboard)
-- Angular: [topce/ngx-chessground](https://github.com/topce/ngx-chessground)
-- Svelte: [Janldeboer/svelte5-chessground](https://github.com/Janldeboer/svelte5-chessground), [agelas/svelte-chessground-ui (Svelte 4)](https://github.com/agelas/svelte-chessground-ui), [gtim/svelte-chessground (Svelte3)](https://github.com/gtim/svelte-chessground),
-
 More? Please make a pull request to include it here.
 
-## Documentation
 
-- [Config types](https://github.com/lichess-org/chessground/tree/master/src/config.ts)
-- [Default config values](https://github.com/lichess-org/chessground/tree/master/src/state.ts)
-- [API type signatures](https://github.com/lichess-org/chessground/tree/master/src/api.ts)
-- [Simple standalone example](https://github.com/lichess-org/chessground/blob/master/demo.html)
-- [Examples repo](https://github.com/lichess-org/chessground-examples/tree/master/src/units)
-- [Base CSS](https://github.com/lichess-org/chessground-examples/blob/master/assets/chessground.css)
-
-## Development
-
-Install build dependencies:
-
-```sh
-pnpm install
-```
-
-To build the node module:
-
-```sh
-pnpm run compile --watch
-```
-
-To build the standalone:
-
-```sh
-pnpm run dist
-```
-
-To run tests:
-
-```sh
-pnpm test
-## or
-pnpm test:watch
-```
-
-## Release procedure
-
-- https://github.com/lichess-org/chessground/actions/workflows/release.yaml
-- [Run workflow]
-- Branch: master
-- Version tag: vX.Y.Z
 
 The release workflow will increment the package.json version, create the tag, the github release, and publish to npm

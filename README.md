@@ -47,7 +47,7 @@ boardmatejs is designed to fulfill all lichess.org web and mobile apps needs, so
 ## Installation
 
 ```sh
-npm install chess.js @chrisoakman/chessboardjs @chrisoakman/chessboard2 @lichess-org/chessground jquery
+npm install chess.js @chrisoakman/chessboardjs @chrisoakman/chessboard2 @lichess-org/chessground jquery npm i @lichess-org/pgn-viewer
 ```
 
 ### Usage
@@ -75,7 +75,16 @@ import { Chess } from 'chess.js';
 import $ from 'jquery';
 import { Chessboard } from '@chrisoakman/chessboardjs';
 import { Chessground } from '@lichess-org/chessground';
+import LichessPgnViewer from '@lichess-org/pgn-viewer';
+const lpv = LichessPgnViewer(domElement, {
+  pgn: 'e4 c5 Nf3 d6 e5 Nc6 exd6 Qxd6 Nc3 Nf6',
+});
 
+// lpv is an instance of PgnViewer , providing some utilities such as:
+lpv.goTo('first');
+lpv.goTo('next');
+lpv.flip();
+console.log(lpv.game);
 
 const game = new Chess();
 
